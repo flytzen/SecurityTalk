@@ -37,10 +37,10 @@ namespace Web
                 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
                 // Integrate with Managed Identity
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();  
+                //var azureServiceTokenProvider = new AzureServiceTokenProvider();  
                 
-                // Get a link to the keyvault
-                var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback)); 
+                //// Get a link to the keyvault
+                //var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback)); 
 
                 var builder = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
@@ -50,11 +50,12 @@ namespace Web
                     
                     .AddEnvironmentVariables();
 
-                if (!environment.Equals("Development", StringComparison.OrdinalIgnoreCase))
-                {
-                    builder.AddAzureKeyVault("https://securitytalkvault.vault.azure.net/", keyvault,
-                        new DefaultKeyVaultSecretManager());
-                }
+                //if (!environment.Equals("Development", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    // Add key vault as a configuration provider
+                //    builder.AddAzureKeyVault("https://securitytalkvault.vault.azure.net/", keyvault,
+                //        new DefaultKeyVaultSecretManager());
+                //}
 
                 return builder.Build();
 
