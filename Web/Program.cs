@@ -19,25 +19,7 @@ namespace Web
             try
             {
                 ConfigureLogging(Configuration);
-                try
-                {
-                    Log.Information("Starting to play with key vault");
-                    var azureServiceTokenProvider = new AzureServiceTokenProvider();
 
-                    var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-                    Log.Information("Reading secrets");
-                    var t = keyvault.GetSecretsAsync("https://securitytalkvault.vault.azure.net/").Result;
-                    Log.Information("Read {count} secrets", t.Count());
-                    var t2 = new ConfigurationBuilder().AddAzureKeyVault("https://securitytalkvault.vault.azure.net/",
-                        keyvault, new DefaultKeyVaultSecretManager());
-                    Log.Information("Added keyvautl to a builder");
-                    var t3 = t2.Build();
-                    Log.Information("Built the thing");
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, "Failed to play with keyvault");
-                }
                 BuildWebHost(new string[0]{}).Run();
             }
             catch (Exception ex)
@@ -59,8 +41,8 @@ namespace Web
                 // Integrate with Managed Identity
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
 
-                //// Get a link to the keyvault
-                //var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback)); 
+                // Get a link to the keyvault
+                var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
                 var builder = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
@@ -70,12 +52,12 @@ namespace Web
                     
                     .AddEnvironmentVariables();
 
-                //if (!environment.Equals("Development", StringComparison.OrdinalIgnoreCase))
-                //{
-                //    // Add key vault as a configuration provider
-                //    builder.AddAzureKeyVault("https://securitytalkvault.vault.azure.net/", keyvault,
-                //        new DefaultKeyVaultSecretManager());
-                //}
+                if (!environment.Equals("Development", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Add key vault as a configuration provider
+                    builder.AddAzureKeyVault("https://securitytalkvault.vault.azure.net/", keyvault,
+                        new DefaultKeyVaultSecretManager());
+                }
 
                 return builder.Build();
 
