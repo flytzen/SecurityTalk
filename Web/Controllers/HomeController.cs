@@ -8,11 +8,15 @@ using Web.Models;
 
 namespace Web.Controllers
 {
+    using System.IO;
     using Db;
     using Microsoft.Azure.KeyVault;
     using Microsoft.Azure.Services.AppAuthentication;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Configuration.AzureKeyVault;
+    using Microsoft.Net.Http.Headers;
+    using Microsoft.WindowsAzure.Storage;
+    using Microsoft.WindowsAzure.Storage.Blob;
     using Serilog;
 
     public class HomeController : Controller
@@ -39,28 +43,42 @@ namespace Web.Controllers
 
         public IActionResult About()
         {
-            try
-            {
-                Log.Information("Starting to play with key vault");
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
 
-                var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-                Log.Information("Reading secrets");
-                var t = keyvault.GetSecretsAsync("https://securitytalkvault.vault.azure.net/").Result;
-                Log.Information("Read {count} secrets", t.Count());
-                var t2 = new ConfigurationBuilder().AddAzureKeyVault("https://securitytalkvault.vault.azure.net/",
-                    keyvault, new DefaultKeyVaultSecretManager());
-                Log.Information("Added keyvautl to a builder");
-                var t3 = t2.Build();
-                Log.Information("Built the thing");
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Failed to play with keyvault");
-            }
             ViewData["Message"] = "Your application description page.";
 
             return View();
+        }
+
+        public async Task<IActionResult> GetFile()
+        {
+            try
+            {
+                var storageConnectionString = this.configuration["StorageConnectionString"];
+                var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+                var blobClient = storageAccount.CreateCloudBlobClient();
+                var containerReference = blobClient.GetContainerReference("mycontainer");
+                if (await containerReference.CreateIfNotExistsAsync())
+                {
+                    // Initialise for first use 
+                    Log.Information("Initialising blob storage");
+                    var uploadblobReference = containerReference.GetBlockBlobReference("myblob.txt");
+                    await uploadblobReference.UploadTextAsync("My file content");
+                }
+
+                var blobReference = containerReference.GetBlockBlobReference("myblob.txt");
+                var ms = new MemoryStream();
+                await blobReference.DownloadToStreamAsync(ms);
+                ms.Position = 0;
+                return new FileStreamResult(ms, "text/plain")
+                {
+                    FileDownloadName = "myblob.txt"
+                };
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to play blob storage");
+                throw;
+            }
         }
 
         public IActionResult Contact()
