@@ -9,20 +9,28 @@ using Web.Models;
 namespace Web.Controllers
 {
     using Db;
+    using Microsoft.Extensions.Configuration;
 
     public class HomeController : Controller
     {
         private MyContext context;
+        private readonly IConfiguration configuration;
 
-        public HomeController(MyContext context)
+        public HomeController(MyContext context, IConfiguration configuration)
         {
             this.context = context;
+            this.configuration = configuration;
         }
 
         public IActionResult Index()
         {
-            var customers = context.Customers.ToList();
-            return View();
+            var model = new HomeModel()
+            {
+                Customers = this.context.Customers.ToList(),
+                DummyConfigValue = this.configuration["Dummy"]
+            };
+
+            return View(model);
         }
 
         public IActionResult About()

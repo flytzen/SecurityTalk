@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Web
 {
+    using Microsoft.Azure.KeyVault;
+    using Microsoft.Azure.Services.AppAuthentication;
+    using Microsoft.Extensions.Configuration.AzureKeyVault;
     using Serilog;
 
     public class Program
@@ -27,15 +30,36 @@ namespace Web
             }
         }
 
-        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile(
-                $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "NOTHING"}.json",
-                optional: true)
-            //.AddUserSecrets<Startup>()
-            .AddEnvironmentVariables()
-            .Build();
+        public static IConfiguration Configuration
+        {
+            get
+            {
+                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+
+                // Integrate with Managed Identity
+                var azureServiceTokenProvider = new AzureServiceTokenProvider();  
+                
+                // Get a link to the keyvault
+                var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback)); 
+
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{environment}.json", optional: true)
+                    .AddUserSecrets<Startup>()
+                    
+                    .AddEnvironmentVariables();
+
+                if (!environment.Equals("Development", StringComparison.OrdinalIgnoreCase))
+                {
+                    builder.AddAzureKeyVault("https://securitytalkvault.vault.azure.net/", keyvault,
+                        new DefaultKeyVaultSecretManager());
+                }
+
+                return builder.Build();
+
+            }
+        }
 
         private static IWebHost BuildWebHost(string[] args)
         {
