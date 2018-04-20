@@ -9,7 +9,11 @@ using Web.Models;
 namespace Web.Controllers
 {
     using Db;
+    using Microsoft.Azure.KeyVault;
+    using Microsoft.Azure.Services.AppAuthentication;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Configuration.AzureKeyVault;
+    using Serilog;
 
     public class HomeController : Controller
     {
@@ -35,6 +39,25 @@ namespace Web.Controllers
 
         public IActionResult About()
         {
+            try
+            {
+                Log.Information("Starting to play with key vault");
+                var azureServiceTokenProvider = new AzureServiceTokenProvider();
+
+                var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+                Log.Information("Reading secrets");
+                var t = keyvault.GetSecretsAsync("https://securitytalkvault.vault.azure.net/").Result;
+                Log.Information("Read {count} secrets", t.Count());
+                var t2 = new ConfigurationBuilder().AddAzureKeyVault("https://securitytalkvault.vault.azure.net/",
+                    keyvault, new DefaultKeyVaultSecretManager());
+                Log.Information("Added keyvautl to a builder");
+                var t3 = t2.Build();
+                Log.Information("Built the thing");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to play with keyvault");
+            }
             ViewData["Message"] = "Your application description page.";
 
             return View();
