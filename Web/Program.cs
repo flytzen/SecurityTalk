@@ -18,6 +18,17 @@ namespace Web
             try
             {
                 ConfigureLogging(Configuration);
+                try
+                {
+                    var azureServiceTokenProvider = new AzureServiceTokenProvider();
+
+                    var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+                    var t = keyvault.GetSecretsAsync("https://securitytalkvault.vault.azure.net/").Result;
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed to play with keyvault");
+                }
                 BuildWebHost(new string[0]{}).Run();
             }
             catch (Exception ex)
