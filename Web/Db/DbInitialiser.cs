@@ -6,21 +6,32 @@ using System.Threading.Tasks;
 namespace Web.Db
 {
     using Microsoft.EntityFrameworkCore;
+    using Serilog;
 
     public static class DbInitialiser
     {
         public static void Init()
         {
-            using (var context = new DesignTimeDbContextFactory().CreateDbContext(new string[0]))
+            Log.Information("Starting to init database");
+            try
             {
-                context.Database.Migrate();
-                if (!context.Customers.Any())
+                using (var context = new DesignTimeDbContextFactory().CreateDbContext(new string[0]))
                 {
-                    context.Customers.Add(new Customer() {Name = "Ajax inc"});
-                    context.Customers.Add(new Customer() {Name = "Big Evil Corp"});
-                    context.SaveChanges();
+                    context.Database.Migrate();
+                    if (!context.Customers.Any())
+                    {
+                        context.Customers.Add(new Customer() {Name = "Ajax inc"});
+                        context.Customers.Add(new Customer() {Name = "Big Evil Corp"});
+                        context.SaveChanges();
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to init database");
+                throw;
+            }
+            Log.Information("Finished initing database");
         }
     }
 }

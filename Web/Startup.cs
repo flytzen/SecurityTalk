@@ -33,6 +33,7 @@ namespace Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             DbInitialiser.Init();
+            // TODO: Test access to storage here
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();

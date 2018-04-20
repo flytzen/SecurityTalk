@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Web
 {
-    //using Serilog;
+    using Serilog;
 
     public class Program
     {
@@ -14,16 +14,16 @@ namespace Web
         {
             try
             {
-                //ConfigureLogging(Configuration);
+                ConfigureLogging(Configuration);
                 BuildWebHost(new string[0]{}).Run();
             }
             catch (Exception ex)
             {
-                //Log.Fatal(ex, "Host terminated unexpectedly");
+                Log.Fatal(ex, "Host terminated unexpectedly");
             }
             finally
             {
-                //Log.CloseAndFlush();
+                Log.CloseAndFlush();
             }
         }
 
@@ -44,32 +44,30 @@ namespace Web
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(Configuration)
                 .UseApplicationInsights()
-                //.UseSerilog()
+                .UseSerilog()
                 .UseStartup<Startup>()
                 .Build();
         }
 
-        //private static void ConfigureLogging(IConfiguration configuration)
-        //{
-        //    var serilogConfigurationSection = configuration.GetSection("Logging:Serilog");
-        //    var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-        //    var loggerConfiguration = new LoggerConfiguration()
-        //        .ReadFrom.ConfigurationSection(serilogConfigurationSection)
-        //        .Enrich.FromLogContext()
-        //        .Enrich.WithProperty("Environment", environment);
+        private static void ConfigureLogging(IConfiguration configuration)
+        {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+            var loggerConfiguration = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithProperty("Environment", environment);
 
-        //    if (environment.ToUpperInvariant() == "DEVELOPMENT")
-        //    {
-        //        loggerConfiguration.WriteTo.ColoredConsole();
-        //    }
-        //    else
-        //    {
-        //        loggerConfiguration
-        //            .WriteTo.ApplicationInsightsTraces(configuration.GetSection("ApplicationInsights")["InstrumentationKey"]);
-        //    }
+            if (environment.ToUpperInvariant() == "DEVELOPMENT")
+            {
+                loggerConfiguration.WriteTo.ColoredConsole();
+            }
+            else
+            {
+                loggerConfiguration
+                    .WriteTo.ApplicationInsightsTraces(configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
+            }
 
-        //    Log.Logger = loggerConfiguration.CreateLogger();
-        //    Log.Information("Logging initialised");
-        //}
+            Log.Logger = loggerConfiguration.CreateLogger();
+            Log.Information("Logging initialised");
+        }
     }
 }
