@@ -37,8 +37,8 @@ namespace Web
                 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
                 // Integrate with Managed Identity
-                //var azureServiceTokenProvider = new AzureServiceTokenProvider();  
-                
+                var azureServiceTokenProvider = new AzureServiceTokenProvider();
+
                 //// Get a link to the keyvault
                 //var keyvault = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback)); 
 
