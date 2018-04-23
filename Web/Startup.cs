@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Web
 {
+    using System.Data.SqlClient;
     using Db;
     using Microsoft.EntityFrameworkCore;
 
