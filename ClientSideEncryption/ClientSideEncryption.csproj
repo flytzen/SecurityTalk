@@ -41,6 +41,15 @@
     <Reference Include="Microsoft.Azure.KeyVault, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.KeyVault.2.3.2\lib\net452\Microsoft.Azure.KeyVault.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.2.0.4\lib\net45\Microsoft.Azure.KeyVault.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Cryptography.2.0.5\lib\net45\Microsoft.Azure.KeyVault.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Extensions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Extensions.2.0.5\lib\net45\Microsoft.Azure.KeyVault.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.WebKey, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.KeyVault.WebKey.2.0.7\lib\net452\Microsoft.Azure.KeyVault.WebKey.dll</HintPath>
     </Reference>
@@ -83,6 +92,9 @@
     <Reference Include="Microsoft.SqlServer.Management.AlwaysEncrypted.AzureKeyVaultProvider, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SqlServer.Management.AlwaysEncrypted.AzureKeyVaultProvider.2.1.0\lib\net46\Microsoft.SqlServer.Management.AlwaysEncrypted.AzureKeyVaultProvider.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=9.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.Storage.9.1.1\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -103,6 +115,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlobDemo\BlobDemo.cs" />
     <Compile Include="DbDemo\Demo.cs" />
     <Compile Include="DbDemo\MyContext.cs" />
     <Compile Include="Migrations\Configuration.cs" />

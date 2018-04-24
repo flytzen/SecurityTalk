@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace ClientSideEncryption.DbDemo
 {
     using System.Data.SqlClient;
+    using Microsoft.Azure.KeyVault;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Microsoft.SqlServer.Management.AlwaysEncrypted.AzureKeyVaultProvider;
 
@@ -79,19 +80,23 @@ namespace ClientSideEncryption.DbDemo
 
         private static SqlColumnEncryptionAzureKeyVaultProvider GetKeyProvider()
         {
-// Using keys from config, but should ideally be Managed Service Identity
+            
+            var keyProvider = new SqlColumnEncryptionAzureKeyVaultProvider(GetAuthToken);
+            return keyProvider;
+        }
+
+        private static async Task<string> GetAuthToken(string authority, string resource, string scope)
+        {
+            // Using keys from config, but should ideally be Managed Service Identity
             var configSection = Program.Configuration.GetSection("KeyVault");
             var clientCredential = new ClientCredential(configSection["ApplicationId"], configSection["Key"]);
-            var keyProvider = new SqlColumnEncryptionAzureKeyVaultProvider(async (authority, resource, scope) =>
-            {
-                var authContext = new AuthenticationContext(authority);
-                AuthenticationResult result = await authContext.AcquireTokenAsync(resource, clientCredential);
 
-                if (result == null)
-                    throw new InvalidOperationException("Failed to obtain the access token");
-                return result.AccessToken;
-            });
-            return keyProvider;
+            var authContext = new AuthenticationContext(authority);
+            AuthenticationResult result = await authContext.AcquireTokenAsync(resource, clientCredential);
+
+            if (result == null)
+                throw new InvalidOperationException("Failed to obtain the access token");
+            return result.AccessToken;
         }
     }
 }
