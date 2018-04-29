@@ -53,7 +53,9 @@ namespace Web.Controllers
         {
             try
             {
+                // This gets the connection string - but actually from KeyVault and not from config
                 var storageConnectionString = this.configuration["StorageConnectionString"];
+
                 var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
                 var blobClient = storageAccount.CreateCloudBlobClient();
                 var containerReference = blobClient.GetContainerReference("mycontainer");

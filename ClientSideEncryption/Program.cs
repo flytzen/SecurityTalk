@@ -13,11 +13,11 @@ namespace ClientSideEncryption
     {
         static void Main(string[] args)
         {
-            //var dbDemo = new DbDemo.Demo(Configuration.GetConnectionString("MyContext"));
-            //dbDemo.Run();
+            var dbDemo = new DbDemo.Demo(Configuration.GetConnectionString("MyContext"));
+            dbDemo.Run();
 
-            var blobDemo = new BlobDemo.BlobDemo(Configuration.GetConnectionString("StorageConnectionString"));
-            blobDemo.Run().Wait();
+            //var blobDemo = new BlobDemo.BlobDemo(Configuration.GetConnectionString("StorageConnectionString"));
+            //blobDemo.Run().Wait();
 
             Console.ReadKey();
         }

@@ -42,6 +42,7 @@ namespace ClientSideEncryption.BlobDemo
             var blobClient = storageAccount.CreateCloudBlobClient();
             var containerReference = blobClient.GetContainerReference("consoleappcontainer");
             var blobReference = containerReference.GetBlockBlobReference("myblob.txt");
+
             var encryptionKey = await this.keyResolver.ResolveKeyAsync("https://securitytalkvault.vault.azure.net/keys/BlobEncryption1", new CancellationToken());
 
             await blobReference.UploadTextAsync(
@@ -62,6 +63,7 @@ namespace ClientSideEncryption.BlobDemo
             var blobClient = storageAccount.CreateCloudBlobClient();
             var containerReference = blobClient.GetContainerReference("consoleappcontainer");
             var blobReference = containerReference.GetBlockBlobReference("myblob.txt");
+
             var blobContent = await blobReference.DownloadTextAsync(
                 Encoding.UTF8,
                 AccessCondition.GenerateIfExistsCondition(), 
